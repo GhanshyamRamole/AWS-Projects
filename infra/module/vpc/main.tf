@@ -101,7 +101,7 @@ resource "aws_route_table_association" "private_subnet_association" {
 
 resource "aws_subnet" "db" {
   count             = length(var.db_subnets)
-  vpc_id            = aws_vpc.main.id
+  vpc_id            = aws_vpc.stage.id
   cidr_block        = var.db_subnets[count.index]
   availability_zone = var.azs[count.index]
   map_public_ip_on_launch = false
