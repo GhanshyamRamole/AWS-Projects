@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  # The Node.js Application
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      - PORT=3000
+      - DB_HOST=db  # Matches the service name below
+      - DB_USER=postgres
+      - DB_PASS=mysecretpassword
+      - DB_NAME=taskdb
+      - DB_PORT=5432
+
+  # The Postgres Database
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=mysecretpassword
+      - POSTGRES_DB=taskdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # OPTIONAL: Automatically creates the table on first startup
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  pgdata:
