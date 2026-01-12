@@ -1,5 +1,6 @@
 const express = require("express");
 const { Client } = require("pg");
+const path = require("path"); // <--- IMPORT PATH MODULE
 
 // -------------------------------------------------------
 // 1. SETUP & CONFIGURATION
@@ -7,8 +8,10 @@ const { Client } = require("pg");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// We need this line to understand JSON data sent by users
-app.use(express.json()); 
+app.use(express.json());
+
+// ---> ADD THIS: Serve Static Files (The Frontend)
+app.use(express.static(path.join(__dirname, '../public')));
 
 const dbConfig = {
   host: process.env.DB_HOST,
@@ -28,7 +31,7 @@ const client = new Client(dbConfig);
   try {
     console.log("🔌 Connecting to the Task Database...");
     await client.connect();
-    console.log("✅ Database Connected! Ready to track your tasks.");
+    console.log("✅ Database Connected!");
   } catch (err) {
     console.error("❌ Database connection failed:", err.message);
   }
@@ -38,89 +41,58 @@ const client = new Client(dbConfig);
 // 3. API ROUTES
 // -------------------------------------------------------
 
+// ---> ADD THIS: Health Check for AWS Load Balancer
+app.get("/health", (req, res) => {
+  res.status(200).send("OK");
+});
+
 // GET: Retrieve all tasks
-// "Show me everything I need to do."
 app.get("/tasks", async (req, res) => {
   try {
     const result = await client.query("SELECT * FROM tasks ORDER BY created_at DESC");
-    res.json({
-      message: "Here are your tasks!",
-      count: result.rowCount,
-      tasks: result.rows
-    });
+    res.json({ tasks: result.rows });
   } catch (error) {
-    console.error("Error fetching tasks:", error.message);
+    console.error(error.message);
     res.status(500).json({ error: "Could not fetch tasks." });
   }
 });
 
 // POST: Create a new task
-// "I need to remember to buy milk."
 app.post("/tasks", async (req, res) => {
   const { description } = req.body;
-
-  // Simple validation: Don't allow empty tasks
-  if (!description) {
-    return res.status(400).json({ error: "Please provide a task description!" });
-  }
+  if (!description) return res.status(400).json({ error: "Description required" });
 
   try {
     const query = "INSERT INTO tasks (description) VALUES ($1) RETURNING *";
     const result = await client.query(query, [description]);
-    
-    res.status(201).json({
-      message: "Task created successfully! 💪",
-      task: result.rows[0]
-    });
+    res.status(201).json(result.rows[0]);
   } catch (error) {
-    console.error("Error creating task:", error.message);
+    console.error(error.message);
     res.status(500).json({ error: "Could not save task." });
   }
 });
 
-// PATCH: Mark a task as done
-// "I finished this one!"
+// PATCH: Complete task
 app.patch("/tasks/:id/complete", async (req, res) => {
-  const taskId = req.params.id;
-
   try {
     const query = "UPDATE tasks SET is_complete = TRUE WHERE id = $1 RETURNING *";
-    const result = await client.query(query, [taskId]);
-
-    if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Task not found." });
-    }
-
-    res.json({
-      message: "Great job! Task marked as complete. ✅",
-      task: result.rows[0]
-    });
+    const result = await client.query(query, [req.params.id]);
+    if (result.rowCount === 0) return res.status(404).json({ error: "Task not found" });
+    res.json(result.rows[0]);
   } catch (error) {
-    console.error("Error updating task:", error.message);
-    res.status(500).json({ error: "Could not update task." });
+    res.status(500).json({ error: "Could not update task" });
   }
 });
 
-// DELETE: Remove a task
-// "I don't need this anymore."
+// DELETE: Remove task
 app.delete("/tasks/:id", async (req, res) => {
-  const taskId = req.params.id;
-
   try {
     const query = "DELETE FROM tasks WHERE id = $1 RETURNING *";
-    const result = await client.query(query, [taskId]);
-
-    if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Task not found (maybe you already deleted it?)" });
-    }
-
-    res.json({
-      message: "Task deleted successfully. 🗑️",
-      deletedTask: result.rows[0]
-    });
+    const result = await client.query(query, [req.params.id]);
+    if (result.rowCount === 0) return res.status(404).json({ error: "Task not found" });
+    res.json({ message: "Deleted" });
   } catch (error) {
-    console.error("Error deleting task:", error.message);
-    res.status(500).json({ error: "Could not delete task." });
+    res.status(500).json({ error: "Could not delete task" });
   }
 });
 
@@ -128,10 +100,5 @@ app.delete("/tasks/:id", async (req, res) => {
 // 4. SERVER START
 // -------------------------------------------------------
 app.listen(PORT, () => {
-  console.log(`
-  🚀 Task Manager API is live!
-  ---------------------------------------
-  📝 Endpoint: http://localhost:${PORT}/tasks
-  ---------------------------------------
-  `);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
