@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Task Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-color: #1f2937;
+            --text-light: #6b7280;
+            --danger: #ef4444;
+            --success: #10b981;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--text-light);
+        }
+
+        /* Input Area */
+        .input-group {
+            background: var(--card-bg);
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 10px;
+            margin-bottom: 2rem;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+        }
+
+        button.add-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button.add-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* Task List */
+        .task-list {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .task-card {
+            background: var(--card-bg);
+            padding: 1.25rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .task-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .task-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .task-text {
+            font-size: 1.05rem;
+        }
+
+        .task-date {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            display: block;
+            margin-top: 4px;
+        }
+
+        /* Completed State */
+        .task-card.completed .task-text {
+            text-decoration: line-through;
+            color: var(--text-light);
+        }
+
+        .task-card.completed {
+            background-color: #f9fafb;
+            border-left: 4px solid var(--success);
+        }
+
+        /* Actions */
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            transition: background 0.2s;
+            color: var(--text-light);
+        }
+
+        .btn-check:hover {
+            color: var(--success);
+            background: #d1fae5;
+        }
+
+        .btn-delete:hover {
+            color: var(--danger);
+            background: #fee2e2;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1><i class="fa-solid fa-list-check"></i> Task Manager</h1>
+        <p>Stay organized, focused, and get things done.</p>
+    </div>
+
+    <div class="input-group">
+        <input type="text" id="taskInput" placeholder="What needs to be done?">
+        <button class="add-btn" onclick="addTask()">Add Task</button>
+    </div>
+
+    <ul class="task-list" id="taskList">
+        </ul>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
