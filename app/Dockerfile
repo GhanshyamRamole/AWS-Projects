@@ -6,7 +6,7 @@ WORKDIR /app
 COPY package*.json ./
 copy .env .env.local
 
-RUN npm install -g npm@latest
+RUN npm install 
 
 COPY . .
 
