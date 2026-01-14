@@ -4,7 +4,7 @@ A scalable, containerized task management API built with Node.js and PostgreSQL,
 
 ## Architecture Overview
 
-![Architecture Diagram](./generated-diagrams/architecture-diagram.png)
+![Architecture Diagram](./diagrams/architecture-diagram.png)
 
 This application demonstrates a production-ready AWS architecture with the following components:
 
@@ -76,7 +76,7 @@ AWS-Projects/
 │   │   ├── waf.tf               # Web application firewall
 │   │   └── sg.tf                # Security groups
 │   └── module/vpc/              # Reusable VPC module
-└── generated-diagrams/          # Architecture diagrams
+└── diagrams/          # Architecture diagrams
 ```
 
 ## Infrastructure Details
