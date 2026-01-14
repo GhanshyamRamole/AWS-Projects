@@ -1,6 +1,6 @@
-# Daily Task Manager - AWS Cloud Application
+ # Enterprise Task Orchestration Platform - AWS Cloud-Native Architecture
 
-A scalable, containerized task management API built with Node.js and PostgreSQL, deployed on AWS using modern cloud-native architecture patterns.
+A production-grade, highly available task management microservice built with Node.js and PostgreSQL, deployed on AWS using enterprise-class cloud-native architecture patterns and DevOps best practices.
 
 ## Architecture Overview
 
@@ -42,7 +42,7 @@ This application demonstrates a production-ready AWS architecture with the follo
 ## Technology Stack
 
 ### Application
-- **Runtime**: Node.js 14+
+- **Runtime**: Node.js 18+
 - **Framework**: Express.js
 - **Database Client**: pg (PostgreSQL)
 - **Environment**: Docker containerized
@@ -100,7 +100,7 @@ AWS-Projects/
 - AWS CLI configured with appropriate permissions
 - Terraform >= 1.0
 - Docker and Docker Compose
-- Node.js 14+ (for local development)
+- Node.js 18+ (for local development)
 
 ### Local Development
 
@@ -144,19 +144,17 @@ AWS-Projects/
    terraform apply
    ```
 
-5. **Build and push container**
-   ```bash
-   # Get ECR login token
-   aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin <account-id>.dkr.ecr.eu-west-1.amazonaws.com
+5. **Container deployment**
    
-   # Build and tag image
-   cd ../../../app
-   docker build -t daily-task-manager .
-   docker tag daily-task-manager:latest <account-id>.dkr.ecr.eu-west-1.amazonaws.com/daily-task-manager:latest
+   Container build and push to ECR is automated through GitHub Actions workflow. The workflow triggers on:
+   - Push to main branch
+   - Manual workflow dispatch
    
-   # Push to ECR
-   docker push <account-id>.dkr.ecr.eu-west-1.amazonaws.com/daily-task-manager:latest
-   ```
+   The CI/CD pipeline handles:
+   - Docker image build
+   - ECR authentication
+   - Image tagging and push
+   - ECS service update
 
 ## Environment Variables
 
